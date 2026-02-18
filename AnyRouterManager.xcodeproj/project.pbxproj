@@ -1,0 +1,402 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001 /* AnyRouterManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
+		A10002 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
+		A10003 /* ProviderConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
+		A10004 /* APIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
+		A10005 /* AnyRouterAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
+		A10006 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
+		A10007 /* WAFService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
+		A10008 /* SchedulerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
+		A10009 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
+		A10010 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
+		A10011 /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
+		A10012 /* AccountFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10012; };
+		A10013 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
+		A10014 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014; };
+		A10015 /* AccountListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015; };
+		A10016 /* AccountRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10016; };
+		A10017 /* AccountDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017; };
+		A10018 /* AccountFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018; };
+		A10019 /* CookieImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019; };
+		A10020 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10020; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C10001 /* AnyRouterManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnyRouterManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10001 /* AnyRouterManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRouterManagerApp.swift; sourceTree = "<group>"; };
+		B10002 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		B10003 /* ProviderConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderConfig.swift; sourceTree = "<group>"; };
+		B10004 /* APIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModels.swift; sourceTree = "<group>"; };
+		B10005 /* AnyRouterAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRouterAPI.swift; sourceTree = "<group>"; };
+		B10006 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		B10007 /* WAFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WAFService.swift; sourceTree = "<group>"; };
+		B10008 /* SchedulerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerService.swift; sourceTree = "<group>"; };
+		B10009 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B10010 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B10011 /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
+		B10012 /* AccountFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountFormViewModel.swift; sourceTree = "<group>"; };
+		B10013 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10014 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		B10015 /* AccountListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListView.swift; sourceTree = "<group>"; };
+		B10016 /* AccountRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRowView.swift; sourceTree = "<group>"; };
+		B10017 /* AccountDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailView.swift; sourceTree = "<group>"; };
+		B10018 /* AccountFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountFormView.swift; sourceTree = "<group>"; };
+		B10019 /* CookieImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookieImportView.swift; sourceTree = "<group>"; };
+		B10020 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000 = {
+			isa = PBXGroup;
+			children = (
+				E10001 /* AnyRouterManager */,
+				E10099 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E10099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10001 /* AnyRouterManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E10001 /* AnyRouterManager */ = {
+			isa = PBXGroup;
+			children = (
+				E10002 /* App */,
+				E10003 /* Models */,
+				E10004 /* ViewModels */,
+				E10005 /* Views */,
+				E10006 /* Services */,
+				E10007 /* Utils */,
+			);
+			path = AnyRouterManager;
+			sourceTree = "<group>";
+		};
+		E10002 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B10001 /* AnyRouterManagerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E10003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10002 /* Account.swift */,
+				B10003 /* ProviderConfig.swift */,
+				B10004 /* APIModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E10004 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B10011 /* AccountListViewModel.swift */,
+				B10012 /* AccountFormViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E10005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E10010 /* MenuBar */,
+				E10011 /* Main */,
+				E10012 /* Forms */,
+				E10013 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10010 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				B10013 /* MenuBarView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		E10011 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				B10014 /* MainWindowView.swift */,
+				B10015 /* AccountListView.swift */,
+				B10016 /* AccountRowView.swift */,
+				B10017 /* AccountDetailView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		E10012 /* Forms */ = {
+			isa = PBXGroup;
+			children = (
+				B10018 /* AccountFormView.swift */,
+				B10019 /* CookieImportView.swift */,
+			);
+			path = Forms;
+			sourceTree = "<group>";
+		};
+		E10013 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B10020 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E10006 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10005 /* AnyRouterAPI.swift */,
+				B10006 /* KeychainService.swift */,
+				B10007 /* WAFService.swift */,
+				B10008 /* SchedulerService.swift */,
+				B10009 /* NotificationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E10007 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B10010 /* Constants.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10001 /* AnyRouterManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = G10003 /* Build configuration list for PBXNativeTarget "AnyRouterManager" */;
+			buildPhases = (
+				D10002 /* Sources */,
+				D10001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AnyRouterManager;
+			productName = AnyRouterManager;
+			productReference = C10001 /* AnyRouterManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					F10001 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = G10001 /* Build configuration list for PBXProject "AnyRouterManager" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"zh-Hans",
+			);
+			mainGroup = E10000;
+			productRefGroup = E10099 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10001 /* AnyRouterManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001 /* AnyRouterManagerApp.swift in Sources */,
+				A10002 /* Account.swift in Sources */,
+				A10003 /* ProviderConfig.swift in Sources */,
+				A10004 /* APIModels.swift in Sources */,
+				A10005 /* AnyRouterAPI.swift in Sources */,
+				A10006 /* KeychainService.swift in Sources */,
+				A10007 /* WAFService.swift in Sources */,
+				A10008 /* SchedulerService.swift in Sources */,
+				A10009 /* NotificationService.swift in Sources */,
+				A10010 /* Constants.swift in Sources */,
+				A10011 /* AccountListViewModel.swift in Sources */,
+				A10012 /* AccountFormViewModel.swift in Sources */,
+				A10013 /* MenuBarView.swift in Sources */,
+				A10014 /* MainWindowView.swift in Sources */,
+				A10015 /* AccountListView.swift in Sources */,
+				A10016 /* AccountRowView.swift in Sources */,
+				A10017 /* AccountDetailView.swift in Sources */,
+				A10018 /* AccountFormView.swift in Sources */,
+				A10019 /* CookieImportView.swift in Sources */,
+				A10020 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		H10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		H10002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		H10003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AnyRouterManager/AnyRouterManager.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "AnyRouter Manager";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anyrouter.manager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		H10004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AnyRouterManager/AnyRouterManager.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "AnyRouter Manager";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anyrouter.manager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		G10001 /* Build configuration list for PBXProject "AnyRouterManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H10001 /* Debug */,
+				H10002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		G10003 /* Build configuration list for PBXNativeTarget "AnyRouterManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H10003 /* Debug */,
+				H10004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F10000 /* Project object */;
+}
