@@ -18,3 +18,5 @@ build/
 *.dSYM
 Pods/
 .build/
+AnyRouterManager.dmg
+*.dmg
