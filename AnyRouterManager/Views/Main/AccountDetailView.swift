@@ -30,18 +30,18 @@ struct AccountDetailView: View {
                 // Quota details
                 Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 8) {
                     GridRow {
-                        Text("总额度").foregroundStyle(.secondary)
-                        Text(String(format: "$%.2f", s.quota)).monospacedDigit()
-                    }
-                    GridRow {
-                        Text("已使用").foregroundStyle(.secondary)
-                        Text(String(format: "$%.2f", s.usedQuota)).monospacedDigit()
-                    }
-                    GridRow {
-                        Text("剩余余额").foregroundStyle(.secondary)
+                        Text("当前余额").foregroundStyle(.secondary)
                         Text(String(format: "$%.2f", s.balance))
                             .monospacedDigit()
                             .bold()
+                    }
+                    GridRow {
+                        Text("历史消耗").foregroundStyle(.secondary)
+                        Text(String(format: "$%.2f", s.usedQuota)).monospacedDigit()
+                    }
+                    GridRow {
+                        Text("总额度").foregroundStyle(.secondary)
+                        Text(String(format: "$%.2f", s.totalQuota)).monospacedDigit()
                     }
                     GridRow {
                         Text("API User").foregroundStyle(.secondary)

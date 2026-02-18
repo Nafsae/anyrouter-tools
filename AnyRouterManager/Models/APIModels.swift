@@ -64,7 +64,8 @@ enum AccountStatus: Equatable {
 final class AccountRuntimeState {
     var quota: Double = 0
     var usedQuota: Double = 0
-    var balance: Double { quota - usedQuota }
+    var balance: Double { quota }
+    var totalQuota: Double { quota + usedQuota }
     var status: AccountStatus = .idle
     var lastRefreshDate: Date?
     var lastCheckInDate: Date?
