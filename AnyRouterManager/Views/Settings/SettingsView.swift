@@ -35,12 +35,6 @@ struct SettingsView: View {
                 Toggle("签到结果通知", isOn: $notificationsEnabled)
             }
 
-            Section("WAF 缓存") {
-                Button("清除 WAF Cookie 缓存") {
-                    vm.wafService.clearCache()
-                }
-            }
-
             Section("关于") {
                 LabeledContent("版本", value: "1.0.0")
             }

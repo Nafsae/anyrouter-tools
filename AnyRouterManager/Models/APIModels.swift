@@ -7,12 +7,21 @@ struct UserInfoResponse: Decodable {
     let data: UserData?
 
     struct UserData: Decodable {
+        let id: Int?
+        let username: String?
+        let displayName: String?
+        let email: String?
         let quota: Int
         let usedQuota: Int
 
         enum CodingKeys: String, CodingKey {
-            case quota
+            case id, username, email, quota
+            case displayName = "display_name"
             case usedQuota = "used_quota"
+        }
+
+        var bestName: String? {
+            displayName ?? username ?? email
         }
     }
 }

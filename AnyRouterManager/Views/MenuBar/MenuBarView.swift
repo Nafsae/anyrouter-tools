@@ -4,11 +4,9 @@ import SwiftData
 struct MenuBarView: View {
     @Environment(AccountListViewModel.self) private var vm
     @Query(filter: #Predicate<Account> { $0.isEnabled }, sort: \Account.name) private var accounts: [Account]
-    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Header
             HStack {
                 Text("AnyRouter")
                     .font(.headline)
@@ -20,7 +18,6 @@ struct MenuBarView: View {
 
             Divider()
 
-            // Account summaries
             if accounts.isEmpty {
                 Text("暂无账号")
                     .foregroundStyle(.secondary)
@@ -45,17 +42,12 @@ struct MenuBarView: View {
 
             Divider()
 
-            // Actions
             HStack(spacing: 12) {
                 Button("刷新全部") {
                     Task { await vm.refreshAll(accounts: accounts) }
                 }
                 Button("全部签到") {
                     Task { await vm.checkInAll(accounts: accounts) }
-                }
-                Spacer()
-                Button("打开详情") {
-                    openWindow(id: "main")
                 }
             }
             .buttonStyle(.borderless)

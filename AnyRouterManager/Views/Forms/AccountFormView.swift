@@ -20,24 +20,60 @@ struct AccountFormView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Title
             Text(isEditing ? "编辑账号" : "添加账号")
                 .font(.headline)
                 .padding()
 
             Form {
-                TextField("名称", text: $formVM.name, prompt: Text("例如: 主账号"))
+                Section("1. 粘贴 Cookie 并识别") {
+                    Picker("Provider", selection: $formVM.provider) {
+                        ForEach(AccountFormViewModel.providers, id: \.self) { p in
+                            Text(p).tag(p)
+                        }
+                    }
 
-                TextField("API User", text: $formVM.apiUser, prompt: Text("数字 ID"))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Session Cookie")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextEditor(text: $formVM.sessionCookie)
+                            .font(.system(.body, design: .monospaced))
+                            .frame(height: 60)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(.quaternary)
+                            )
+                    }
 
-                Picker("Provider", selection: $formVM.provider) {
-                    ForEach(AccountFormViewModel.providers, id: \.self) { p in
-                        Text(p).tag(p)
+                    HStack {
+                        Button {
+                            Task { await formVM.detectAccount() }
+                        } label: {
+                            if formVM.isDetecting {
+                                ProgressView()
+                                    .scaleEffect(0.6)
+                                    .frame(width: 16, height: 16)
+                                Text(formVM.detectMessage ?? "识别中…")
+                                    .font(.caption)
+                            } else {
+                                Label("自动识别", systemImage: "magnifyingglass")
+                            }
+                        }
+                        .disabled(!formVM.canDetect)
+
+                        if let msg = formVM.detectMessage, !formVM.isDetecting {
+                            Text(msg)
+                                .font(.caption)
+                                .foregroundStyle(msg.hasPrefix("识别成功") ? .green : .red)
+                                .lineLimit(2)
+                        }
                     }
                 }
 
-                SecureField("Session Cookie", text: $formVM.sessionCookie, prompt: Text(isEditing ? "留空则保持不变" : "session=xxx 或纯 value"))
-                    .help("从浏览器 DevTools → Application → Cookies 复制 session 值")
+                Section("2. 确认账号信息") {
+                    TextField("名称", text: $formVM.name, prompt: Text("自动填充或手动输入"))
+                    TextField("API User", text: $formVM.apiUser, prompt: Text("自动填充或手动输入"))
+                }
 
                 if let err = errorMessage {
                     Text(err)
@@ -48,7 +84,6 @@ struct AccountFormView: View {
             .formStyle(.grouped)
             .padding(.horizontal)
 
-            // Buttons
             HStack {
                 Button("取消") { dismiss() }
                     .keyboardShortcut(.cancelAction)
@@ -61,7 +96,7 @@ struct AccountFormView: View {
             }
             .padding()
         }
-        .frame(width: 420)
+        .frame(width: 500, height: 420)
         .onAppear {
             if case .edit(let account) = mode {
                 formVM.load(from: account)

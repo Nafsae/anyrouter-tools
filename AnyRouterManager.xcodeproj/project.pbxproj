@@ -27,6 +27,8 @@
 		A10018 /* AccountFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018; };
 		A10019 /* CookieImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019; };
 		A10020 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10020; };
+		A10021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10021; };
+		A10022 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10022; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,8 @@
 		B10018 /* AccountFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountFormView.swift; sourceTree = "<group>"; };
 		B10019 /* CookieImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookieImportView.swift; sourceTree = "<group>"; };
 		B10020 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10022 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,8 @@
 				E10005 /* Views */,
 				E10006 /* Services */,
 				E10007 /* Utils */,
+				B10021 /* Assets.xcassets */,
+				B10022 /* AppIcon.icns */,
 			);
 			path = AnyRouterManager;
 			sourceTree = "<group>";
@@ -195,6 +201,7 @@
 			buildConfigurationList = G10003 /* Build configuration list for PBXNativeTarget "AnyRouterManager" */;
 			buildPhases = (
 				D10002 /* Sources */,
+				D10003 /* Resources */,
 				D10001 /* Frameworks */,
 			);
 			buildRules = (
@@ -269,6 +276,18 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXResourcesBuildPhase section */
+		D10003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10021 /* Assets.xcassets in Resources */,
+				A10022 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin XCBuildConfiguration section */
 		H10001 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -325,6 +344,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = AnyRouterManager/AnyRouterManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -332,7 +352,9 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AnyRouterManager/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "AnyRouter Manager";
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -352,6 +374,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = AnyRouterManager/AnyRouterManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -359,7 +382,9 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AnyRouterManager/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "AnyRouter Manager";
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -1,9 +1,11 @@
 import SwiftUI
 import SwiftData
+import AppKit
 
 @main
 struct AnyRouterManagerApp: App {
     @State private var listVM = AccountListViewModel()
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Account.self])
@@ -16,21 +18,13 @@ struct AnyRouterManagerApp: App {
     }()
 
     var body: some Scene {
-        MenuBarExtra {
-            MenuBarView()
-                .environment(listVM)
-        } label: {
-            Label {
-                Text("AnyRouter")
-            } icon: {
-                Image(systemName: "antenna.radiowaves.left.and.right")
-            }
-        }
-        .menuBarExtraStyle(.window)
-
         WindowGroup {
             MainWindowView()
                 .environment(listVM)
+                .onAppear {
+                    NSApp.setActivationPolicy(.regular)
+                    NSApp.activate(ignoringOtherApps: true)
+                }
         }
         .modelContainer(sharedModelContainer)
         .defaultSize(width: 720, height: 520)
@@ -39,5 +33,21 @@ struct AnyRouterManagerApp: App {
             SettingsView()
                 .environment(listVM)
         }
+    }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            for window in sender.windows {
+                window.makeKeyAndOrderFront(self)
+            }
+        }
+        return true
     }
 }
