@@ -8,7 +8,6 @@ struct AccountRowView: View {
         let s = vm.state(for: account)
 
         HStack(spacing: 10) {
-            // Status indicator
             Circle()
                 .fill(statusColor(s.status))
                 .frame(width: 10, height: 10)
@@ -32,30 +31,31 @@ struct AccountRowView: View {
                             .padding(.vertical, 1)
                             .background(.quaternary, in: Capsule())
                     }
+                    Spacer()
+                    Text(String(format: "$%.2f", s.balance))
+                        .font(.callout.monospacedDigit())
+                        .foregroundStyle(s.balance > 0 ? .green : .red)
                 }
 
-                HStack(spacing: 8) {
-                    Text(String(format: "$%.2f", s.balance))
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(s.balance > 0 ? .green : .red)
-
-                    if let date = s.lastRefreshDate {
+                HStack(spacing: 6) {
+                    if let email = account.email, !email.isEmpty {
+                        Text(email)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                    Spacer()
+                    if case .error(let msg) = s.status {
+                        Text(msg)
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                            .lineLimit(1)
+                    } else if let date = s.lastRefreshDate {
                         Text(date, style: .relative)
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                     }
                 }
-            }
-
-            Spacer()
-
-            // Status text
-            if case .error(let msg) = s.status {
-                Text(msg)
-                    .font(.caption2)
-                    .foregroundStyle(.red)
-                    .lineLimit(1)
-                    .frame(maxWidth: 100, alignment: .trailing)
             }
         }
         .padding(.vertical, 4)

@@ -45,9 +45,10 @@ struct MainWindowView: View {
         }
         .onAppear {
             NotificationService.requestPermission()
-            vm.scheduler.start {
-                await vm.refreshAll(accounts: accounts)
-            }
+            vm.scheduler.start(
+                onRefresh: { await vm.refreshAll(accounts: accounts) },
+                onCheckIn: { await vm.checkInAll(accounts: accounts) }
+            )
         }
     }
 }

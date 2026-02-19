@@ -5,6 +5,7 @@ import SwiftData
 @MainActor
 final class AccountFormViewModel {
     var name = ""
+    var email = ""
     var apiUser = ""
     var provider = "anyrouter"
     var sessionCookie = ""
@@ -46,11 +47,12 @@ final class AccountFormViewModel {
     private func applyDetectedInfo(_ info: (id: String, name: String, quota: Double, usedQuota: Double)) {
         if !info.id.isEmpty { apiUser = info.id }
         if name.isEmpty { name = info.name }
-        detectMessage = "识别成功：\(info.name) (余额 $\(String(format: "%.2f", info.quota - info.usedQuota)))"
+        detectMessage = "识别成功：\(info.name) (余额 $\(String(format: "%.2f", info.quota)))"
     }
 
     func save(context: ModelContext) throws {
         let account = Account(name: name.trimmingCharacters(in: .whitespaces),
+                              email: email.trimmingCharacters(in: .whitespaces).isEmpty ? nil : email.trimmingCharacters(in: .whitespaces),
                               apiUser: apiUser.trimmingCharacters(in: .whitespaces),
                               provider: provider)
         context.insert(account)
@@ -62,6 +64,7 @@ final class AccountFormViewModel {
 
     func update(account: Account, context: ModelContext) throws {
         account.name = name.trimmingCharacters(in: .whitespaces)
+        account.email = email.trimmingCharacters(in: .whitespaces).isEmpty ? nil : email.trimmingCharacters(in: .whitespaces)
         account.apiUser = apiUser.trimmingCharacters(in: .whitespaces)
         account.provider = provider
         try context.save()
@@ -75,6 +78,7 @@ final class AccountFormViewModel {
 
     func load(from account: Account) {
         name = account.name
+        email = account.email ?? ""
         apiUser = account.apiUser
         provider = account.provider
         sessionCookie = KeychainService.load(for: account.id) ?? ""

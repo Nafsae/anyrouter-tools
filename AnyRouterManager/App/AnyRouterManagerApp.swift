@@ -29,6 +29,15 @@ struct AnyRouterManagerApp: App {
         .modelContainer(sharedModelContainer)
         .defaultSize(width: 720, height: 520)
 
+        MenuBarExtra {
+            MenuBarView()
+                .environment(listVM)
+                .modelContainer(sharedModelContainer)
+        } label: {
+            Label("AnyRouter", systemImage: "network")
+        }
+        .menuBarExtraStyle(.window)
+
         Settings {
             SettingsView()
                 .environment(listVM)

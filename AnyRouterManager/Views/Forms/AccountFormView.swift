@@ -72,6 +72,7 @@ struct AccountFormView: View {
 
                 Section("2. 确认账号信息") {
                     TextField("名称", text: $formVM.name, prompt: Text("自动填充或手动输入"))
+                    TextField("邮箱", text: $formVM.email, prompt: Text("可选，方便备注"))
                     TextField("API User", text: $formVM.apiUser, prompt: Text("自动填充或手动输入"))
                 }
 

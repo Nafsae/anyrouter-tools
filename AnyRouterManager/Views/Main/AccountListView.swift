@@ -8,30 +8,51 @@ struct AccountListView: View {
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
-        List(sortedAccounts, selection: $selectedAccount) { account in
-            AccountRowView(account: account)
-                .tag(account)
-                .contextMenu {
-                    Button("刷新") {
-                        Task { await vm.refresh(account: account) }
+        VStack(spacing: 0) {
+            List(sortedAccounts, selection: $selectedAccount) { account in
+                AccountRowView(account: account)
+                    .tag(account)
+                    .contextMenu {
+                        Button("刷新") {
+                            Task { await vm.refresh(account: account) }
+                        }
+                        Button("签到") {
+                            Task { await vm.checkIn(account: account) }
+                        }
+                        Divider()
+                        Button(account.isEnabled ? "禁用" : "启用") {
+                            account.isEnabled.toggle()
+                        }
+                        Divider()
+                        Button("删除", role: .destructive) {
+                            delete(account)
+                        }
                     }
-                    Button("签到") {
-                        Task { await vm.checkIn(account: account) }
+            }
+            .listStyle(.sidebar)
+            .overlay {
+                if accounts.isEmpty {
+                    ContentUnavailableView("暂无账号", systemImage: "tray", description: Text("点击 + 添加你的 AnyRouter 账号"))
+                }
+            }
+
+            if !accounts.isEmpty {
+                Divider()
+                HStack(spacing: 12) {
+                    Button {
+                        Task { await vm.refreshAll(accounts: accounts) }
+                    } label: {
+                        Label("刷新全部", systemImage: "arrow.clockwise")
                     }
-                    Divider()
-                    Button(account.isEnabled ? "禁用" : "启用") {
-                        account.isEnabled.toggle()
-                    }
-                    Divider()
-                    Button("删除", role: .destructive) {
-                        delete(account)
+                    Button {
+                        Task { await vm.checkInAll(accounts: accounts) }
+                    } label: {
+                        Label("全部签到", systemImage: "checkmark.circle")
                     }
                 }
-        }
-        .listStyle(.sidebar)
-        .overlay {
-            if accounts.isEmpty {
-                ContentUnavailableView("暂无账号", systemImage: "tray", description: Text("点击 + 添加你的 AnyRouter 账号"))
+                .buttonStyle(.borderless)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
             }
         }
     }
