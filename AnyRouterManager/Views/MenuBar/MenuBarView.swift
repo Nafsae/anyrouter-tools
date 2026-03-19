@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MenuBarView: View {
-    @Environment(AccountListViewModel.self) private var vm
+    @EnvironmentObject private var vm: AccountListViewModel
     @Query(filter: #Predicate<Account> { $0.isEnabled }, sort: \Account.name) private var accounts: [Account]
 
     var body: some View {
@@ -61,6 +61,13 @@ struct MenuBarView: View {
         }
         .padding(12)
         .frame(width: 280)
+        .onAppear {
+            vm.prepareStates(for: accounts)
+            vm.triggerInitialRefreshIfNeeded(accounts: accounts)
+        }
+        .onChange(of: accounts.count) { _, _ in
+            vm.prepareStates(for: accounts)
+        }
     }
 
     private func statusColor(_ status: AccountStatus) -> Color {

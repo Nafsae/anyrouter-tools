@@ -1,16 +1,19 @@
 import Foundation
+import Combine
 import SwiftData
 
-@Observable
 @MainActor
-final class AccountFormViewModel {
-    var name = ""
-    var email = ""
-    var apiUser = ""
-    var provider = "anyrouter"
-    var sessionCookie = ""
-    var isDetecting = false
-    var detectMessage: String?
+final class AccountFormViewModel: ObservableObject {
+    @Published var name = ""
+    @Published var email = ""
+    @Published var apiUser = ""
+    @Published var provider = "anyrouter"
+    @Published var sessionCookie = ""
+    @Published var apiKey = ""
+    @Published var isDetecting = false
+    @Published var detectMessage: String?
+    @Published var isTestingAPIKey = false
+    @Published var apiKeyTestMessage: String?
 
     var isValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -20,6 +23,10 @@ final class AccountFormViewModel {
 
     var canDetect: Bool {
         !sessionCookie.trimmingCharacters(in: .whitespaces).isEmpty && !isDetecting
+    }
+
+    var canTestAPIKey: Bool {
+        !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isTestingAPIKey
     }
 
     static let providers = Array(ProviderConfig.builtIn.keys).sorted()
@@ -44,6 +51,25 @@ final class AccountFormViewModel {
         isDetecting = false
     }
 
+    func testAPIKey() async {
+        let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedKey.isEmpty else { return }
+
+        isTestingAPIKey = true
+        apiKeyTestMessage = "测试中…"
+
+        let providerConfig = ProviderConfig.provider(for: provider)
+        let api = AnyRouterAPI()
+
+        do {
+            apiKeyTestMessage = try await api.testAPIKey(provider: providerConfig, apiKey: trimmedKey)
+        } catch {
+            apiKeyTestMessage = "测试失败：\(error.localizedDescription)"
+        }
+
+        isTestingAPIKey = false
+    }
+
     private func applyDetectedInfo(_ info: (id: String, name: String, quota: Double, usedQuota: Double)) {
         if !info.id.isEmpty { apiUser = info.id }
         if name.isEmpty { name = info.name }
@@ -60,6 +86,11 @@ final class AccountFormViewModel {
 
         let cookie = parseCookieValue(sessionCookie.trimmingCharacters(in: .whitespacesAndNewlines))
         try KeychainService.save(cookie: cookie, for: account.id)
+
+        let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedKey.isEmpty {
+            try KeychainService.saveAPIKey(trimmedKey, for: account.id)
+        }
     }
 
     func update(account: Account, context: ModelContext) throws {
@@ -74,6 +105,13 @@ final class AccountFormViewModel {
             let cookie = parseCookieValue(raw)
             try KeychainService.save(cookie: cookie, for: account.id)
         }
+
+        let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedKey.isEmpty {
+            KeychainService.deleteAPIKey(for: account.id)
+        } else {
+            try KeychainService.saveAPIKey(trimmedKey, for: account.id)
+        }
     }
 
     func load(from account: Account) {
@@ -82,6 +120,7 @@ final class AccountFormViewModel {
         apiUser = account.apiUser
         provider = account.provider
         sessionCookie = KeychainService.load(for: account.id) ?? ""
+        apiKey = KeychainService.loadAPIKey(for: account.id) ?? ""
     }
 
     private func parseCookieValue(_ raw: String) -> String {

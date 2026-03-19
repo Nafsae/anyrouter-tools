@@ -4,7 +4,7 @@ import AppKit
 
 @main
 struct AnyRouterManagerApp: App {
-    @State private var listVM = AccountListViewModel()
+    @StateObject private var listVM = AccountListViewModel()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var sharedModelContainer: ModelContainer = {
@@ -20,7 +20,7 @@ struct AnyRouterManagerApp: App {
     var body: some Scene {
         WindowGroup {
             MainWindowView()
-                .environment(listVM)
+                .environmentObject(listVM)
                 .onAppear {
                     NSApp.setActivationPolicy(.regular)
                     NSApp.activate(ignoringOtherApps: true)
@@ -31,7 +31,7 @@ struct AnyRouterManagerApp: App {
 
         MenuBarExtra {
             MenuBarView()
-                .environment(listVM)
+                .environmentObject(listVM)
                 .modelContainer(sharedModelContainer)
         } label: {
             Label("AnyRouter", systemImage: "network")
@@ -40,7 +40,7 @@ struct AnyRouterManagerApp: App {
 
         Settings {
             SettingsView()
-                .environment(listVM)
+                .environmentObject(listVM)
         }
     }
 }

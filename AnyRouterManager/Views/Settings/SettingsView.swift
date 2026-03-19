@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(AccountListViewModel.self) private var vm
-    @AppStorage("refreshInterval") private var refreshInterval = 15.0
+    @EnvironmentObject private var vm: AccountListViewModel
+    @AppStorage(Constants.Defaults.refreshIntervalKey) private var refreshInterval = Constants.Defaults.refreshInterval / 60
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
-    @AppStorage("autoCheckInEnabled") private var autoCheckInEnabled = false
-    @AppStorage("autoCheckInHour") private var autoCheckInHour = 8
-    @AppStorage("autoCheckInMinute") private var autoCheckInMinute = 0
+    @AppStorage(Constants.Defaults.autoCheckInEnabledKey) private var autoCheckInEnabled = false
+    @AppStorage(Constants.Defaults.autoCheckInHourKey) private var autoCheckInHour = Constants.Defaults.autoCheckInHour
+    @AppStorage(Constants.Defaults.autoCheckInMinuteKey) private var autoCheckInMinute = Constants.Defaults.autoCheckInMinute
 
     private let intervals: [(String, Double)] = [
         ("5 分钟", 5),
@@ -43,28 +43,37 @@ struct SettingsView: View {
                     HStack {
                         Text("签到时间")
                         Spacer()
-                        Picker("", selection: $autoCheckInHour) {
+                        Picker("小时", selection: $autoCheckInHour) {
                             ForEach(0..<24, id: \.self) { h in
                                 Text(String(format: "%02d", h)).tag(h)
                             }
                         }
-                        .frame(width: 70)
+                        .labelsHidden()
+                        .frame(width: 76)
                         .onChange(of: autoCheckInHour) { _, _ in
                             vm.scheduler.rescheduleCheckIn()
                         }
 
                         Text(":")
 
-                        Picker("", selection: $autoCheckInMinute) {
-                            ForEach([0, 15, 30, 45], id: \.self) { m in
+                        Picker("分钟", selection: $autoCheckInMinute) {
+                            ForEach(0..<60, id: \.self) { m in
                                 Text(String(format: "%02d", m)).tag(m)
                             }
                         }
-                        .frame(width: 70)
+                        .labelsHidden()
+                        .frame(width: 76)
                         .onChange(of: autoCheckInMinute) { _, _ in
                             vm.scheduler.rescheduleCheckIn()
                         }
                     }
+
+                    Button("快捷设置为每天 11:00") {
+                        autoCheckInHour = 11
+                        autoCheckInMinute = 0
+                        vm.scheduler.rescheduleCheckIn()
+                    }
+                    .buttonStyle(.link)
 
                     if let next = nextCheckInText() {
                         Text("下次签到：\(next)")
@@ -83,7 +92,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 400, height: 400)
+        .frame(width: 420, height: 420)
     }
 
     private func nextCheckInText() -> String? {

@@ -8,6 +8,14 @@ enum Constants {
     static let alreadyCheckedKeywords = ["已经签到", "已签到", "重复签到", "already checked", "already signed"]
 
     enum Defaults {
+        static let refreshIntervalKey = "refreshInterval"
+        static let autoRefreshEnabledKey = "autoRefreshEnabled"
+        static let autoCheckInEnabledKey = "autoCheckInEnabled"
+        static let autoCheckInHourKey = "autoCheckInHour"
+        static let autoCheckInMinuteKey = "autoCheckInMinute"
+
         static let refreshInterval: TimeInterval = 15 * 60 // 15 min
+        static let autoCheckInHour = 11
+        static let autoCheckInMinute = 0
     }
 }

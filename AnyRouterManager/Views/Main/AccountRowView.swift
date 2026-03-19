@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AccountRowView: View {
     let account: Account
-    @Environment(AccountListViewModel.self) private var vm
+    @EnvironmentObject private var vm: AccountListViewModel
 
     var body: some View {
         let s = vm.state(for: account)
@@ -23,6 +23,11 @@ struct AccountRowView: View {
                     Text(account.name)
                         .fontWeight(.medium)
                         .lineLimit(1)
+                    if hasAPIKey {
+                        Image(systemName: "key.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.green)
+                    }
                     if !account.isEnabled {
                         Text("已禁用")
                             .font(.caption2)
@@ -69,5 +74,10 @@ struct AccountRowView: View {
         case .success: .green
         case .error: .red
         }
+    }
+
+    private var hasAPIKey: Bool {
+        guard let key = KeychainService.loadAPIKey(for: account.id) else { return false }
+        return !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

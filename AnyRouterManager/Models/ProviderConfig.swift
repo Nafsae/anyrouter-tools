@@ -14,6 +14,7 @@ struct ProviderConfig: Sendable {
     var loginURL: URL { URL(string: domain + loginPath)! }
     var userInfoURL: URL { URL(string: domain + userInfoPath)! }
     var signInURL: URL? { signInPath.map { URL(string: domain + $0)! } }
+    var modelsURL: URL { URL(string: domain + "/v1/models")! }
 
     static let builtIn: [String: ProviderConfig] = [
         "anyrouter": ProviderConfig(

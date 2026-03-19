@@ -1,19 +1,33 @@
 import Foundation
+import Combine
 
-@Observable
 @MainActor
-final class SchedulerService {
-    var refreshInterval: TimeInterval = Constants.Defaults.refreshInterval {
-        didSet { rescheduleRefresh() }
+final class SchedulerService: ObservableObject {
+    private let defaults: UserDefaults
+
+    @Published var refreshInterval: TimeInterval {
+        didSet {
+            defaults.set(refreshInterval, forKey: Constants.Defaults.refreshIntervalKey)
+            rescheduleRefresh()
+        }
     }
-    var isAutoRefreshEnabled = true {
-        didSet { rescheduleRefresh() }
+    @Published var isAutoRefreshEnabled: Bool {
+        didSet {
+            defaults.set(isAutoRefreshEnabled, forKey: Constants.Defaults.autoRefreshEnabledKey)
+            rescheduleRefresh()
+        }
     }
 
     private var refreshTimer: Timer?
     private var checkInTimer: Timer?
     private var onRefresh: (() async -> Void)?
     private var onCheckIn: (() async -> Void)?
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        self.refreshInterval = Self.storedRefreshInterval(from: defaults)
+        self.isAutoRefreshEnabled = defaults.object(forKey: Constants.Defaults.autoRefreshEnabledKey) as? Bool ?? true
+    }
 
     func start(onRefresh: @escaping () async -> Void, onCheckIn: @escaping () async -> Void) {
         self.onRefresh = onRefresh
@@ -33,10 +47,10 @@ final class SchedulerService {
         checkInTimer?.invalidate()
         checkInTimer = nil
 
-        guard UserDefaults.standard.bool(forKey: "autoCheckInEnabled") else { return }
+        guard defaults.bool(forKey: Constants.Defaults.autoCheckInEnabledKey) else { return }
 
-        let hour = UserDefaults.standard.integer(forKey: "autoCheckInHour")
-        let minute = UserDefaults.standard.integer(forKey: "autoCheckInMinute")
+        let hour = defaults.object(forKey: Constants.Defaults.autoCheckInHourKey) as? Int ?? Constants.Defaults.autoCheckInHour
+        let minute = defaults.object(forKey: Constants.Defaults.autoCheckInMinuteKey) as? Int ?? Constants.Defaults.autoCheckInMinute
 
         guard let next = nextFireDate(hour: hour, minute: minute) else { return }
         let interval = next.timeIntervalSinceNow
@@ -50,6 +64,11 @@ final class SchedulerService {
                 self.rescheduleCheckIn()
             }
         }
+    }
+
+    private static func storedRefreshInterval(from defaults: UserDefaults) -> TimeInterval {
+        let raw = defaults.object(forKey: Constants.Defaults.refreshIntervalKey) as? TimeInterval ?? Constants.Defaults.refreshInterval
+        return raw < 300 ? raw * 60 : raw
     }
 
     private func nextFireDate(hour: Int, minute: Int) -> Date? {

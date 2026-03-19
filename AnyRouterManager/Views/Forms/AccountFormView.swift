@@ -10,7 +10,7 @@ struct AccountFormView: View {
     let mode: AccountFormMode
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @State private var formVM = AccountFormViewModel()
+    @StateObject private var formVM = AccountFormViewModel()
     @State private var errorMessage: String?
 
     private var isEditing: Bool {
@@ -76,6 +76,35 @@ struct AccountFormView: View {
                     TextField("API User", text: $formVM.apiUser, prompt: Text("自动填充或手动输入"))
                 }
 
+                Section("3. API Key") {
+                    SecureField("API Key", text: $formVM.apiKey, prompt: Text("可选，安全存储在 Keychain"))
+                        .textFieldStyle(.roundedBorder)
+
+                    HStack {
+                        Button {
+                            Task { await formVM.testAPIKey() }
+                        } label: {
+                            if formVM.isTestingAPIKey {
+                                ProgressView()
+                                    .scaleEffect(0.6)
+                                    .frame(width: 16, height: 16)
+                                Text(formVM.apiKeyTestMessage ?? "测试中…")
+                                    .font(.caption)
+                            } else {
+                                Label("测试 Key", systemImage: "key")
+                            }
+                        }
+                        .disabled(!formVM.canTestAPIKey)
+
+                        if let msg = formVM.apiKeyTestMessage, !formVM.isTestingAPIKey {
+                            Text(msg)
+                                .font(.caption)
+                                .foregroundStyle(msg.hasPrefix("Key 可用") ? .green : .red)
+                                .lineLimit(2)
+                        }
+                    }
+                }
+
                 if let err = errorMessage {
                     Text(err)
                         .foregroundStyle(.red)
@@ -97,7 +126,7 @@ struct AccountFormView: View {
             }
             .padding()
         }
-        .frame(width: 500, height: 420)
+        .frame(width: 520, height: 500)
         .onAppear {
             if case .edit(let account) = mode {
                 formVM.load(from: account)

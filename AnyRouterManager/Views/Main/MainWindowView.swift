@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MainWindowView: View {
-    @Environment(AccountListViewModel.self) private var vm
+    @EnvironmentObject private var vm: AccountListViewModel
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Account.name) private var accounts: [Account]
     @State private var showAddForm = false
@@ -38,17 +38,36 @@ struct MainWindowView: View {
                 } label: {
                     Label("全部签到", systemImage: "checkmark.circle")
                 }
+
+                Button {
+                    vm.exportAllCookies(accounts: accounts)
+                } label: {
+                    Label("导出全部 Cookie", systemImage: "square.and.arrow.up")
+                }
+                .disabled(accounts.isEmpty)
+
+                Button {
+                    Task { await vm.testAllAPIKeys(accounts: accounts) }
+                } label: {
+                    Label("测试全部 Key", systemImage: "key.fill")
+                }
+                .disabled(accounts.isEmpty || vm.isTestingAllKeys)
             }
         }
         .sheet(isPresented: $showAddForm) {
             AccountFormView(mode: .add)
         }
         .onAppear {
+            vm.prepareStates(for: accounts)
             NotificationService.requestPermission()
             vm.scheduler.start(
                 onRefresh: { await vm.refreshAll(accounts: accounts) },
                 onCheckIn: { await vm.checkInAll(accounts: accounts) }
             )
+            vm.triggerInitialRefreshIfNeeded(accounts: accounts)
+        }
+        .onChange(of: accounts.count) { _, _ in
+            vm.prepareStates(for: accounts)
         }
     }
 }

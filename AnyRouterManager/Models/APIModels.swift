@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 // MARK: - User Info Response
 
@@ -50,6 +51,16 @@ struct CheckInResponse: Decodable {
     }
 }
 
+// MARK: - API Key Test Response
+
+struct ModelListResponse: Decodable {
+    let data: [ModelItem]
+
+    struct ModelItem: Decodable {
+        let id: String
+    }
+}
+
 // MARK: - Account Runtime State
 
 enum AccountStatus: Equatable {
@@ -60,15 +71,15 @@ enum AccountStatus: Equatable {
     case error(String)
 }
 
-@Observable
-final class AccountRuntimeState {
-    var quota: Double = 0
-    var usedQuota: Double = 0
+final class AccountRuntimeState: ObservableObject {
+    @Published var quota: Double = 0
+    @Published var usedQuota: Double = 0
     var balance: Double { quota }
     var totalQuota: Double { quota + usedQuota }
-    var status: AccountStatus = .idle
-    var lastRefreshDate: Date?
-    var lastCheckInDate: Date?
+    @Published var status: AccountStatus = .idle
+    @Published var lastRefreshDate: Date?
+    @Published var lastCheckInDate: Date?
+    @Published var apiKeyTestResult: String?
 
     var statusText: String {
         switch status {

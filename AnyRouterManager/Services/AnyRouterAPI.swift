@@ -68,6 +68,30 @@ actor AnyRouterAPI {
         )
     }
 
+    // MARK: - Test API Key
+
+    func testAPIKey(provider: ProviderConfig, apiKey: String) async throws -> String {
+        let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedKey.isEmpty else {
+            throw APIError.emptyAPIKey
+        }
+
+        var request = URLRequest(url: provider.modelsURL)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(trimmedKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await session.data(for: request)
+        try checkAPIKeyStatus(response)
+
+        if let modelList = try? JSONDecoder().decode(ModelListResponse.self, from: data) {
+            let count = modelList.data.count
+            return count > 0 ? "Key 可用，检测到 \(count) 个模型" : "Key 可用"
+        }
+
+        return "Key 可用"
+    }
+
     // MARK: - Check In
 
     func checkIn(provider: ProviderConfig, apiUser: String, sessionCookie: String) async throws -> String {
@@ -250,12 +274,23 @@ actor AnyRouterAPI {
         }
     }
 
+    private func checkAPIKeyStatus(_ response: URLResponse) throws {
+        guard let http = response as? HTTPURLResponse else { return }
+        switch http.statusCode {
+        case 200...299: return
+        case 401, 403: throw APIError.invalidAPIKey
+        default: throw APIError.httpError(http.statusCode)
+        }
+    }
+
     enum APIError: LocalizedError {
         case sessionExpired
         case wafBlocked
         case httpError(Int)
         case invalidResponse
         case checkInFailed(String)
+        case invalidAPIKey
+        case emptyAPIKey
 
         var errorDescription: String? {
             switch self {
@@ -264,6 +299,8 @@ actor AnyRouterAPI {
             case .httpError(let code): "HTTP 错误: \(code)"
             case .invalidResponse: "无效的响应数据"
             case .checkInFailed(let msg): "签到失败: \(msg)"
+            case .invalidAPIKey: "API Key 无效或无权限"
+            case .emptyAPIKey: "请先填写 API Key"
             }
         }
     }

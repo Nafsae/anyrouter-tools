@@ -4,7 +4,7 @@ import SwiftData
 struct AccountListView: View {
     let accounts: [Account]
     @Binding var selectedAccount: Account?
-    @Environment(AccountListViewModel.self) private var vm
+    @EnvironmentObject private var vm: AccountListViewModel
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
@@ -49,6 +49,17 @@ struct AccountListView: View {
                     } label: {
                         Label("全部签到", systemImage: "checkmark.circle")
                     }
+                    Button {
+                        vm.exportAllCookies(accounts: accounts)
+                    } label: {
+                        Label("导出 Cookie", systemImage: "square.and.arrow.up")
+                    }
+                    Button {
+                        Task { await vm.testAllAPIKeys(accounts: accounts) }
+                    } label: {
+                        Label("测试 Key", systemImage: "key.fill")
+                    }
+                    .disabled(vm.isTestingAllKeys)
                 }
                 .buttonStyle(.borderless)
                 .padding(.vertical, 8)
@@ -78,6 +89,7 @@ struct AccountListView: View {
 
     private func delete(_ account: Account) {
         KeychainService.delete(for: account.id)
+        BalanceCacheService.delete(for: account.id)
         vm.removeState(for: account.id)
         if selectedAccount?.id == account.id { selectedAccount = nil }
         modelContext.delete(account)
