@@ -67,8 +67,7 @@ final class SchedulerService: ObservableObject {
     }
 
     private static func storedRefreshInterval(from defaults: UserDefaults) -> TimeInterval {
-        let raw = defaults.object(forKey: Constants.Defaults.refreshIntervalKey) as? TimeInterval ?? Constants.Defaults.refreshInterval
-        return raw < 300 ? raw * 60 : raw
+        defaults.object(forKey: Constants.Defaults.refreshIntervalKey) as? TimeInterval ?? Constants.Defaults.refreshInterval
     }
 
     private func nextFireDate(hour: Int, minute: Int) -> Date? {

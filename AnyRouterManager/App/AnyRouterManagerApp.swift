@@ -8,12 +8,14 @@ struct AnyRouterManagerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Account.self])
+        let schema = Schema(versionedSchema: AnyRouterSchemaV1.self)
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
-            return try ModelContainer(for: schema, configurations: [config])
+            return try ModelContainer(for: schema, migrationPlan: AnyRouterMigrationPlan.self, configurations: [config])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            NSLog("[AnyRouterManager] ModelContainer failed: \(error). Falling back to in-memory store.")
+            let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return try! ModelContainer(for: schema, migrationPlan: AnyRouterMigrationPlan.self, configurations: [fallback])
         }
     }()
 

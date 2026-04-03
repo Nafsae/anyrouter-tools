@@ -15,6 +15,8 @@ final class AccountFormViewModel: ObservableObject {
     @Published var isTestingAPIKey = false
     @Published var apiKeyTestMessage: String?
 
+    private let api = AnyRouterAPI()
+
     var isValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
         && !apiUser.trimmingCharacters(in: .whitespaces).isEmpty
@@ -39,7 +41,6 @@ final class AccountFormViewModel: ObservableObject {
         detectMessage = "正在识别…"
 
         let providerConfig = ProviderConfig.provider(for: provider)
-        let api = AnyRouterAPI()
 
         do {
             let info = try await api.detectAccount(provider: providerConfig, sessionCookie: cookie)
@@ -59,7 +60,6 @@ final class AccountFormViewModel: ObservableObject {
         apiKeyTestMessage = "测试中…"
 
         let providerConfig = ProviderConfig.provider(for: provider)
-        let api = AnyRouterAPI()
 
         do {
             apiKeyTestMessage = try await api.testAPIKey(provider: providerConfig, apiKey: trimmedKey)

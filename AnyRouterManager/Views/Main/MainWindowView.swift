@@ -61,8 +61,16 @@ struct MainWindowView: View {
             vm.prepareStates(for: accounts)
             NotificationService.requestPermission()
             vm.scheduler.start(
-                onRefresh: { await vm.refreshAll(accounts: accounts) },
-                onCheckIn: { await vm.checkInAll(accounts: accounts) }
+                onRefresh: { [modelContext] in
+                    let descriptor = FetchDescriptor<Account>(sortBy: [SortDescriptor(\Account.name)])
+                    let currentAccounts = (try? modelContext.fetch(descriptor)) ?? []
+                    await vm.refreshAll(accounts: currentAccounts)
+                },
+                onCheckIn: { [modelContext] in
+                    let descriptor = FetchDescriptor<Account>(sortBy: [SortDescriptor(\Account.name)])
+                    let currentAccounts = (try? modelContext.fetch(descriptor)) ?? []
+                    await vm.checkInAll(accounts: currentAccounts)
+                }
             )
             vm.triggerInitialRefreshIfNeeded(accounts: accounts)
         }

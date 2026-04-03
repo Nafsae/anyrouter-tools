@@ -226,6 +226,8 @@ struct AccountDetailView: View {
         guard !trimmed.isEmpty else { return }
         do {
             try KeychainService.saveAPIKey(trimmed, for: account.id)
+            let state = vm.state(for: account)
+            state.hasAPIKey = true
             isEditingAPIKey = false
             editingAPIKey = ""
             actionMessage = "API Key 已保存"
@@ -238,7 +240,9 @@ struct AccountDetailView: View {
         KeychainService.deleteAPIKey(for: account.id)
         isEditingAPIKey = false
         editingAPIKey = ""
-        vm.state(for: account).apiKeyTestResult = nil
+        let state = vm.state(for: account)
+        state.hasAPIKey = false
+        state.apiKeyTestResult = nil
         actionMessage = "API Key 已删除"
     }
 
@@ -263,7 +267,7 @@ struct AccountDetailView: View {
 
         do {
             let provider = ProviderConfig.provider(for: account.provider)
-            let result = try await AnyRouterAPI().testAPIKey(provider: provider, apiKey: apiKey)
+            let result = try await vm.sharedAPI.testAPIKey(provider: provider, apiKey: apiKey)
             actionMessage = result
         } catch {
             actionMessage = "测试失败：\(error.localizedDescription)"

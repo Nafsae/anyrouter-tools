@@ -2,11 +2,22 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var vm: AccountListViewModel
-    @AppStorage(Constants.Defaults.refreshIntervalKey) private var refreshInterval = Constants.Defaults.refreshInterval / 60
+    @AppStorage(Constants.Defaults.refreshIntervalKey) private var refreshIntervalSeconds = Constants.Defaults.refreshInterval
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage(Constants.Defaults.autoCheckInEnabledKey) private var autoCheckInEnabled = false
     @AppStorage(Constants.Defaults.autoCheckInHourKey) private var autoCheckInHour = Constants.Defaults.autoCheckInHour
     @AppStorage(Constants.Defaults.autoCheckInMinuteKey) private var autoCheckInMinute = Constants.Defaults.autoCheckInMinute
+
+    private var refreshIntervalMinutes: Binding<Double> {
+        Binding(
+            get: { refreshIntervalSeconds / 60 },
+            set: {
+                let seconds = $0 * 60
+                refreshIntervalSeconds = seconds
+                vm.scheduler.refreshInterval = seconds
+            }
+        )
+    }
 
     private let intervals: [(String, Double)] = [
         ("5 分钟", 5),
@@ -18,13 +29,10 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("自动刷新") {
-                Picker("刷新间隔", selection: $refreshInterval) {
+                Picker("刷新间隔", selection: refreshIntervalMinutes) {
                     ForEach(intervals, id: \.1) { label, value in
                         Text(label).tag(value)
                     }
-                }
-                .onChange(of: refreshInterval) { _, newValue in
-                    vm.scheduler.refreshInterval = newValue * 60
                 }
 
                 Toggle("启用自动刷新", isOn: Binding(
@@ -103,7 +111,8 @@ struct SettingsView: View {
         comp.minute = autoCheckInMinute
         comp.second = 0
         guard let today = cal.date(from: comp) else { return nil }
-        let next = today > now ? today : cal.date(byAdding: .day, value: 1, to: today)!
+        guard let tomorrow = cal.date(byAdding: .day, value: 1, to: today) else { return nil }
+        let next = today > now ? today : tomorrow
         let fmt = DateFormatter()
         fmt.dateFormat = "MM-dd HH:mm"
         return fmt.string(from: next)

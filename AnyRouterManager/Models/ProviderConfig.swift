@@ -11,10 +11,10 @@ struct ProviderConfig: Sendable {
 
     var needsWAFCookies: Bool { !wafCookieNames.isEmpty }
     var needsManualCheckIn: Bool { signInPath != nil }
-    var loginURL: URL { URL(string: domain + loginPath)! }
-    var userInfoURL: URL { URL(string: domain + userInfoPath)! }
-    var signInURL: URL? { signInPath.map { URL(string: domain + $0)! } }
-    var modelsURL: URL { URL(string: domain + "/v1/models")! }
+    var loginURL: URL { URL(string: domain + loginPath) ?? URL(string: domain)! }
+    var userInfoURL: URL { URL(string: domain + userInfoPath) ?? URL(string: domain)! }
+    var signInURL: URL? { signInPath.flatMap { URL(string: domain + $0) } }
+    var modelsURL: URL { URL(string: domain + "/v1/models") ?? URL(string: domain)! }
 
     static let builtIn: [String: ProviderConfig] = [
         "anyrouter": ProviderConfig(

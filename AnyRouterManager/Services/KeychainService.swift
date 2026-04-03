@@ -3,6 +3,7 @@ import Security
 
 enum KeychainService {
     private static let service = "com.anyrouter.manager"
+    private static let cacheLock = NSLock()
     private static var caches: [StoreKind: [String: String]] = [:]
 
     private enum StoreKind: String, CaseIterable {
@@ -54,28 +55,41 @@ enum KeychainService {
     // MARK: - Single-entry store
 
     private static func loadStore(_ kind: StoreKind) -> [String: String] {
-        if let cache = caches[kind] { return cache }
+        cacheLock.lock()
+        if let cache = caches[kind] {
+            cacheLock.unlock()
+            return cache
+        }
+        cacheLock.unlock()
 
         if let dict = loadKeychainStore(kind: kind) {
+            cacheLock.lock()
             caches[kind] = dict
+            cacheLock.unlock()
             try? saveBackupStore(dict, kind: kind)
             return dict
         }
 
         if let dict = loadBackupStore(kind: kind) {
+            cacheLock.lock()
             caches[kind] = dict
+            cacheLock.unlock()
             try? saveKeychainStore(dict, kind: kind)
             return dict
         }
 
         // Migrate old per-account cookie entries if they exist.
         guard kind == .cookies else {
+            cacheLock.lock()
             caches[kind] = [:]
+            cacheLock.unlock()
             return [:]
         }
 
         let migrated = migrateOldEntries()
+        cacheLock.lock()
         caches[kind] = migrated
+        cacheLock.unlock()
         if !migrated.isEmpty {
             try? saveBackupStore(migrated, kind: kind)
         }
@@ -101,27 +115,29 @@ enum KeychainService {
     }
 
     private static func saveStore(_ store: [String: String], kind: StoreKind) throws {
+        cacheLock.lock()
         caches[kind] = store
+        cacheLock.unlock()
 
-        var lastError: Error?
+        var keychainError: Error?
 
         do {
             try saveKeychainStore(store, kind: kind)
         } catch {
-            lastError = error
+            keychainError = error
         }
 
         do {
             try saveBackupStore(store, kind: kind)
-            lastError = nil
         } catch {
-            if lastError == nil {
-                lastError = error
+            // If both fail, throw the keychain error (primary store)
+            if keychainError == nil {
+                throw error
             }
         }
 
-        if let lastError {
-            throw lastError
+        if let keychainError {
+            throw keychainError
         }
     }
 
@@ -165,9 +181,21 @@ enum KeychainService {
 
         let directory = url.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var directoryValues = URLResourceValues()
+        directoryValues.isExcludedFromBackup = true
+        var protectedDirectory = directory
+        try? protectedDirectory.setResourceValues(directoryValues)
+
         let data = try JSONEncoder().encode(store)
         try data.write(to: url, options: .atomic)
-        try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+        try? FileManager.default.setAttributes([
+            .posixPermissions: 0o600,
+            .protectionKey: FileProtectionType.completeUntilFirstUserAuthentication,
+        ], ofItemAtPath: url.path)
+        var fileValues = URLResourceValues()
+        fileValues.isExcludedFromBackup = true
+        var protectedFile = url
+        try? protectedFile.setResourceValues(fileValues)
         return url
     }
 
@@ -248,6 +276,7 @@ enum BalanceCacheService {
     }
 
     private static let fileName = "balance-cache.json"
+    private static let cacheLock = NSLock()
     private static var cache: [String: Entry]?
 
     static func load(for accountID: UUID) -> Entry? {
@@ -285,19 +314,31 @@ enum BalanceCacheService {
     }
 
     private static func loadStore() -> [String: Entry] {
-        if let cache { return cache }
+        cacheLock.lock()
+        if let cache {
+            cacheLock.unlock()
+            return cache
+        }
+        cacheLock.unlock()
+
         guard let url = fileURL,
               let data = try? Data(contentsOf: url),
               let store = try? JSONDecoder().decode([String: Entry].self, from: data) else {
+            cacheLock.lock()
             cache = [:]
+            cacheLock.unlock()
             return [:]
         }
+        cacheLock.lock()
         cache = store
+        cacheLock.unlock()
         return store
     }
 
     private static func saveStore(_ store: [String: Entry]) {
+        cacheLock.lock()
         cache = store
+        cacheLock.unlock()
         guard let url = fileURL else { return }
         do {
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -305,6 +346,7 @@ enum BalanceCacheService {
             try data.write(to: url, options: .atomic)
             try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
         } catch {
+            NSLog("[BalanceCacheService] save failed: \(error.localizedDescription)")
         }
     }
 

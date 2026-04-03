@@ -71,6 +71,7 @@ enum AccountStatus: Equatable {
     case error(String)
 }
 
+@MainActor
 final class AccountRuntimeState: ObservableObject {
     @Published var quota: Double = 0
     @Published var usedQuota: Double = 0
@@ -80,6 +81,7 @@ final class AccountRuntimeState: ObservableObject {
     @Published var lastRefreshDate: Date?
     @Published var lastCheckInDate: Date?
     @Published var apiKeyTestResult: String?
+    @Published var hasAPIKey: Bool = false
 
     var statusText: String {
         switch status {

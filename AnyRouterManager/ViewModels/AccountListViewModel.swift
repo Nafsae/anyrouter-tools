@@ -9,6 +9,8 @@ final class AccountListViewModel: ObservableObject {
     @Published private(set) var states: [UUID: AccountRuntimeState] = [:]
     private let api = AnyRouterAPI()
     let scheduler = SchedulerService()
+
+    var sharedAPI: AnyRouterAPI { api }
     private var stateCancellables: [UUID: AnyCancellable] = [:]
     private var schedulerCancellable: AnyCancellable?
     private var didTriggerInitialRefresh = false
@@ -35,6 +37,9 @@ final class AccountListViewModel: ObservableObject {
             s.usedQuota = cached.usedQuota
             s.lastRefreshDate = cached.lastRefreshAt
             s.lastCheckInDate = cached.lastCheckInAt
+        }
+        if let apiKey = KeychainService.loadAPIKey(for: account.id) {
+            s.hasAPIKey = !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         stateCancellables[account.id] = s.objectWillChange.sink { [weak self] _ in
             self?.objectWillChange.send()
@@ -101,7 +106,9 @@ final class AccountListViewModel: ObservableObject {
             let semaphore = AsyncSemaphore(limit: Constants.maxConcurrentRequests)
             for account in accounts where account.isEnabled {
                 group.addTask { @MainActor in
-                    await semaphore.wait()
+                    guard !Task.isCancelled else { return }
+                    try? await semaphore.wait()
+                    guard !Task.isCancelled else { semaphore.signal(); return }
                     await self.refresh(account: account)
                     semaphore.signal()
                 }
@@ -144,7 +151,9 @@ final class AccountListViewModel: ObservableObject {
             let semaphore = AsyncSemaphore(limit: Constants.maxConcurrentRequests)
             for account in accounts where account.isEnabled {
                 group.addTask { @MainActor in
-                    await semaphore.wait()
+                    guard !Task.isCancelled else { return }
+                    try? await semaphore.wait()
+                    guard !Task.isCancelled else { semaphore.signal(); return }
                     await self.checkIn(account: account)
                     semaphore.signal()
                 }
@@ -192,7 +201,9 @@ final class AccountListViewModel: ObservableObject {
                       !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { continue }
                 let s = state(for: account)
                 group.addTask { @MainActor in
-                    await semaphore.wait()
+                    guard !Task.isCancelled else { return }
+                    try? await semaphore.wait()
+                    guard !Task.isCancelled else { semaphore.signal(); return }
                     s.apiKeyTestResult = "测试中…"
                     let provider = ProviderConfig.provider(for: account.provider)
                     do {
@@ -214,28 +225,53 @@ final class AccountListViewModel: ObservableObject {
 private final class AsyncSemaphore: @unchecked Sendable {
     private let limit: Int
     private var count: Int
-    private var waiters: [CheckedContinuation<Void, Never>] = []
+    private var waiters: [UUID: CheckedContinuation<Void, any Error>] = [:]
+    private let lock = NSLock()
 
     init(limit: Int) {
         self.limit = limit
         self.count = limit
     }
 
-    func wait() async {
-        if count > 0 {
-            count -= 1
-            return
+    func wait() async throws {
+        let acquired: Bool = lock.withLock {
+            if count > 0 {
+                count -= 1
+                return true
+            }
+            return false
         }
-        await withCheckedContinuation { continuation in
-            waiters.append(continuation)
+        if acquired { return }
+
+        let id = UUID()
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                lock.withLock {
+                    if count > 0 {
+                        count -= 1
+                        continuation.resume()
+                    } else {
+                        waiters[id] = continuation
+                    }
+                }
+            }
+        } onCancel: {
+            lock.withLock {
+                if let continuation = waiters.removeValue(forKey: id) {
+                    continuation.resume(throwing: CancellationError())
+                }
+            }
         }
     }
 
     func signal() {
-        if waiters.isEmpty {
-            count += 1
-        } else {
-            waiters.removeFirst().resume()
+        lock.withLock {
+            if waiters.isEmpty {
+                count += 1
+            } else {
+                let first = waiters.removeValue(forKey: waiters.keys.first!)
+                first?.resume()
+            }
         }
     }
 }

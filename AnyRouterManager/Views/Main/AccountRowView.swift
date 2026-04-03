@@ -23,7 +23,7 @@ struct AccountRowView: View {
                     Text(account.name)
                         .fontWeight(.medium)
                         .lineLimit(1)
-                    if hasAPIKey {
+                    if s.hasAPIKey {
                         Image(systemName: "key.fill")
                             .font(.caption2)
                             .foregroundStyle(.green)
@@ -76,8 +76,4 @@ struct AccountRowView: View {
         }
     }
 
-    private var hasAPIKey: Bool {
-        guard let key = KeychainService.loadAPIKey(for: account.id) else { return false }
-        return !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
 }

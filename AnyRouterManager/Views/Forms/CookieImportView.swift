@@ -6,6 +6,10 @@ struct CookieImportView: View {
     let onCookiesExtracted: ([String: String]) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var status = "加载中…"
+    @State private var webView = WKWebView(frame: .zero, configuration: {
+        let config = WKWebViewConfiguration()
+        return config
+    }())
 
     var body: some View {
         VStack(spacing: 12) {
@@ -17,7 +21,7 @@ struct CookieImportView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
-            WebViewWrapper(url: provider.loginURL)
+            WebViewWrapper(webView: webView, url: provider.loginURL)
                 .frame(minWidth: 640, minHeight: 480)
 
             Text(status)
@@ -41,7 +45,7 @@ struct CookieImportView: View {
         status = "正在提取…"
         Task { @MainActor in
             let cookies = await WebViewCookieExtractor.extractCookies(
-                from: provider.loginURL,
+                from: webView,
                 names: provider.wafCookieNames
             )
             if cookies.isEmpty {
@@ -57,13 +61,14 @@ struct CookieImportView: View {
 // MARK: - WebView Wrapper
 
 struct WebViewWrapper: NSViewRepresentable {
+    let webView: WKWebView
     let url: URL
 
     func makeNSView(context: Context) -> WKWebView {
-        let config = WKWebViewConfiguration()
-        let webView = WKWebView(frame: .zero, configuration: config)
         webView.customUserAgent = Constants.userAgent
-        webView.load(URLRequest(url: url))
+        if webView.url == nil {
+            webView.load(URLRequest(url: url))
+        }
         return webView
     }
 
@@ -74,9 +79,8 @@ struct WebViewWrapper: NSViewRepresentable {
 
 enum WebViewCookieExtractor {
     @MainActor
-    static func extractCookies(from url: URL, names: [String]) async -> [String: String] {
-        let config = WKWebViewConfiguration()
-        let store = config.websiteDataStore.httpCookieStore
+    static func extractCookies(from webView: WKWebView, names: [String]) async -> [String: String] {
+        let store = webView.configuration.websiteDataStore.httpCookieStore
         let allCookies = await store.allCookies()
 
         var result: [String: String] = [:]

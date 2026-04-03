@@ -93,5 +93,6 @@ struct AccountListView: View {
         vm.removeState(for: account.id)
         if selectedAccount?.id == account.id { selectedAccount = nil }
         modelContext.delete(account)
+        try? modelContext.save()
     }
 }
