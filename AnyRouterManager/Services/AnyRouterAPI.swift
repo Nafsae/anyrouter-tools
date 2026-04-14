@@ -2,8 +2,15 @@ import Foundation
 
 actor AnyRouterAPI {
     private let session: URLSession
+    private let transport: (@Sendable (URLRequest) async throws -> TransportResponse)?
 
-    init() {
+    init(session: URLSession = URLSession(configuration: AnyRouterAPI.defaultSessionConfig()),
+         transport: (@Sendable (URLRequest) async throws -> TransportResponse)? = nil) {
+        self.session = session
+        self.transport = transport
+    }
+
+    private static func defaultSessionConfig() -> URLSessionConfiguration {
         let config = URLSessionConfiguration.default
         config.httpAdditionalHeaders = [
             "User-Agent": Constants.userAgent,
@@ -12,7 +19,15 @@ actor AnyRouterAPI {
         ]
         config.httpCookieAcceptPolicy = .never
         config.httpShouldSetCookies = false
-        self.session = URLSession(configuration: config)
+        return config
+    }
+
+    private func performTransport(_ request: URLRequest) async throws -> TransportResponse {
+        if let transport {
+            return try await transport(request)
+        }
+        let (data, response) = try await session.data(for: request)
+        return TransportResponse(data: data, response: response)
     }
 
     // MARK: - Detect Account Info
@@ -124,23 +139,28 @@ actor AnyRouterAPI {
 
     // MARK: - Request with auto WAF bypass
 
+    func debugPerformRequest(url: URL, sessionCookie: String) async throws -> Data {
+        var request = URLRequest(url: url)
+        return try await performRequest(&request, sessionCookie: sessionCookie)
+    }
+
     private func performRequest(_ request: inout URLRequest, sessionCookie: String) async throws -> Data {
         request.setValue("session=\(sessionCookie)", forHTTPHeaderField: "Cookie")
 
-        let (data, response) = try await session.data(for: request)
-        try checkHTTPStatus(response)
+        let first = try await performTransport(request)
+        try checkHTTPStatus(first.response)
 
-        guard let html = String(data: data, encoding: .utf8),
-              html.contains("acw_sc__v2"), html.hasPrefix("<html") else {
-            return data
+        guard Self.isWAFChallengePage(data: first.data) else {
+            return first.data
         }
 
-        guard let acwScV2 = Self.solveWAFChallenge(html) else {
+        guard let html = String(data: first.data, encoding: .utf8),
+              let acwScV2 = Self.solveWAFChallenge(html) else {
             throw APIError.wafBlocked
         }
 
         var wafParts = ["acw_sc__v2=\(acwScV2)"]
-        if let http = response as? HTTPURLResponse, let url = request.url {
+        if let http = first.response as? HTTPURLResponse, let url = request.url {
             let headerFields = http.allHeaderFields as? [String: String] ?? [:]
             let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
             for cookie in cookies where cookie.name == "acw_tc" || cookie.name == "cdn_sec_tc" {
@@ -151,14 +171,13 @@ actor AnyRouterAPI {
         let cookieString = wafParts.joined(separator: "; ") + "; session=\(sessionCookie)"
         request.setValue(cookieString, forHTTPHeaderField: "Cookie")
 
-        let (data2, response2) = try await session.data(for: request)
-        try checkHTTPStatus(response2)
+        let second = try await performTransport(request)
+        try checkHTTPStatus(second.response)
 
-        if let html2 = String(data: data2, encoding: .utf8),
-           html2.contains("acw_sc__v2"), html2.hasPrefix("<html") {
+        if Self.isWAFChallengePage(data: second.data) {
             throw APIError.wafBlocked
         }
-        return data2
+        return second.data
     }
 
     // MARK: - WAF Solver (pure Swift, no JavaScriptCore)
@@ -283,7 +302,7 @@ actor AnyRouterAPI {
         }
     }
 
-    enum APIError: LocalizedError {
+    enum APIError: LocalizedError, Equatable {
         case sessionExpired
         case wafBlocked
         case httpError(Int)
@@ -303,6 +322,42 @@ actor AnyRouterAPI {
             case .emptyAPIKey: "请先填写 API Key"
             }
         }
+    }
+}
+
+// MARK: - Test Transport Helpers
+
+struct TransportResponse {
+    let data: Data
+    let response: URLResponse
+}
+
+extension AnyRouterAPI {
+    static func makeHTTPResponse(url: URL, status: Int, cookies: [String] = []) -> HTTPURLResponse {
+        var headers: [String: String] = [:]
+        if !cookies.isEmpty {
+            headers["Set-Cookie"] = cookies.joined(separator: ", ")
+        }
+        return HTTPURLResponse(url: url, statusCode: status, httpVersion: "HTTP/1.1", headerFields: headers)!
+    }
+
+    static func sequenceTransport(_ responses: [TransportResponse]) -> @Sendable (URLRequest) async throws -> TransportResponse {
+        var index = 0
+        return { _ in
+            defer { index += 1 }
+            guard index < responses.count else {
+                throw URLError(.badServerResponse)
+            }
+            return responses[index]
+        }
+    }
+
+    static func htmlResponse(_ string: String, cookies: [String] = [], url: URL = URL(string: "https://anyrouter.top")!, status: Int = 200) -> TransportResponse {
+        TransportResponse(data: Data(string.utf8), response: makeHTTPResponse(url: url, status: status, cookies: cookies))
+    }
+
+    static func jsonResponse(_ string: String, cookies: [String] = [], url: URL = URL(string: "https://anyrouter.top")!, status: Int = 200) -> TransportResponse {
+        TransportResponse(data: Data(string.utf8), response: makeHTTPResponse(url: url, status: status, cookies: cookies))
     }
 }
 

@@ -30,4 +30,20 @@ final class AnyRouterAPIWAFTests: XCTestCase {
 
         XCTAssertFalse(AnyRouterAPI.isWAFChallengePage(data: Data(json.utf8)))
     }
+
+    func testUnauthorizedAfterChallengeIsReportedAsSessionExpired() async throws {
+        let api = AnyRouterAPI(
+            transport: AnyRouterAPI.sequenceTransport([
+                AnyRouterAPI.htmlResponse("<html><script>var arg1='84E4F48DF2C67F59FE1FE70CC566D1BE649AE88E';</script></html>", cookies: ["acw_tc=tc", "cdn_sec_tc=cdn"]),
+                AnyRouterAPI.jsonResponse(#"{"message":"无权进行此操作，未登录且未提供 access token","success":false}"#, status: 401)
+            ])
+        )
+
+        do {
+            _ = try await api.debugPerformRequest(url: URL(string: "https://anyrouter.top/api/user/self")!, sessionCookie: "session=expired")
+            XCTFail("Expected sessionExpired")
+        } catch let error as AnyRouterAPI.APIError {
+            XCTAssertEqual(error, .sessionExpired)
+        }
+    }
 }
