@@ -31,6 +31,7 @@
 		A10022 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10022; };
 		A102 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B102; };
 		B101 /* AnyRouterAPIWAFTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A101; };
+		A102 /* AccountFormViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B102; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		B10022 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		B102 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A101 /* AnyRouterAPIWAFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRouterAPIWAFTests.swift; sourceTree = "<group>"; };
+		B102 /* AccountFormViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AccountFormViewModelTests.swift; path = AnyRouterManagerTests/AccountFormViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				A101 /* AnyRouterAPIWAFTests.swift */,
+				B102 /* AccountFormViewModelTests.swift */,
 			);
 			path = AnyRouterManagerTests;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B101 /* AnyRouterAPIWAFTests.swift in Sources */,
+				A102 /* AccountFormViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

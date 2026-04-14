@@ -123,16 +123,16 @@ final class AccountFormViewModel: ObservableObject {
         apiKey = KeychainService.loadAPIKey(for: account.id) ?? ""
     }
 
+    func normalizedCookieInput(_ raw: String) -> String {
+        raw.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    func sessionValue(from raw: String) -> String {
+        let cookies = AnyRouterAPI.parseCookieHeader(normalizedCookieInput(raw))
+        return cookies["session"] ?? normalizedCookieInput(raw)
+    }
+
     private func parseCookieValue(_ raw: String) -> String {
-        if raw.contains("session=") {
-            let parts = raw.split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) }
-            for part in parts {
-                if part.hasPrefix("session=") {
-                    return String(part.dropFirst("session=".count))
-                }
-            }
-        }
-        // URL decode if needed
-        return raw.removingPercentEncoding ?? raw
+        sessionValue(from: raw)
     }
 }
