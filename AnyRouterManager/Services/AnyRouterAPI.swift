@@ -347,8 +347,8 @@ actor AnyRouterAPI {
 
         var errorDescription: String? {
             switch self {
-            case .sessionExpired: "Session 已过期，请重新导入 Cookie"
-            case .wafBlocked: "WAF 拦截，自动绕过失败"
+            case .sessionExpired: "Session 已过期或未登录，请重新导入 Cookie"
+            case .wafBlocked: "WAF 拦截，自动绕过失败，请重新导入完整 Cookie"
             case .httpError(let code): "HTTP 错误: \(code)"
             case .invalidResponse: "无效的响应数据"
             case .checkInFailed(let msg): "签到失败: \(msg)"

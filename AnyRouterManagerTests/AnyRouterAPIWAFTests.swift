@@ -61,4 +61,11 @@ final class AnyRouterAPIWAFTests: XCTestCase {
 
         XCTAssertTrue(capturedCookies.contains(where: { $0.contains("session=abc123") && $0.contains("acw_tc=tc") }))
     }
+
+    func testSessionExpiredErrorMessageGuidesUserToRefreshCookie() {
+        XCTAssertEqual(
+            AnyRouterAPI.APIError.sessionExpired.errorDescription,
+            "Session 已过期或未登录，请重新导入 Cookie"
+        )
+    }
 }
