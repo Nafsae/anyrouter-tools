@@ -305,3 +305,28 @@ actor AnyRouterAPI {
         }
     }
 }
+
+// MARK: - Cookie Parsing Helpers
+
+extension AnyRouterAPI {
+    static func parseCookieHeader(_ raw: String) -> [String: String] {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [:] }
+
+        if !trimmed.contains("=") {
+            return ["session": trimmed]
+        }
+
+        var result: [String: String] = [:]
+        for part in trimmed.split(separator: ";") {
+            let piece = part.trimmingCharacters(in: .whitespaces)
+            guard let index = piece.firstIndex(of: "=") else { continue }
+            let name = String(piece[..<index]).trimmingCharacters(in: .whitespaces)
+            let value = String(piece[piece.index(after: index)...]).trimmingCharacters(in: .whitespaces)
+            if !name.isEmpty && !value.isEmpty {
+                result[name] = value.removingPercentEncoding ?? value
+            }
+        }
+        return result
+    }
+}

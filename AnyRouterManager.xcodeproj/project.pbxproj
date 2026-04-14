@@ -29,10 +29,13 @@
 		A10020 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10020; };
 		A10021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10021; };
 		A10022 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10022; };
+		A102 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B102; };
+		B101 /* AnyRouterAPIWAFTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A101; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C10001 /* AnyRouterManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnyRouterManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		U100 /* AnyRouterManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnyRouterManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10001 /* AnyRouterManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRouterManagerApp.swift; sourceTree = "<group>"; };
 		B10002 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		B10003 /* ProviderConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderConfig.swift; sourceTree = "<group>"; };
@@ -55,6 +58,8 @@
 		B10020 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10022 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		B102 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A101 /* AnyRouterAPIWAFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRouterAPIWAFTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +70,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		Z100 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A102 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -72,6 +85,8 @@
 			isa = PBXGroup;
 			children = (
 				E10001 /* AnyRouterManager */,
+				C101 /* AnyRouterManagerTests */,
+				E102 /* Frameworks */,
 				E10099 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				C10001 /* AnyRouterManager.app */,
+				U100 /* AnyRouterManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,6 +201,22 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		C101 /* AnyRouterManagerTests */ = {
+			isa = PBXGroup;
+			children = (
+				A101 /* AnyRouterAPIWAFTests.swift */,
+			);
+			path = AnyRouterManagerTests;
+			sourceTree = "<group>";
+		};
+		E102 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B102 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E10007 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,8 +245,41 @@
 			productReference = C10001 /* AnyRouterManager.app */;
 			productType = "com.apple.product-type.application";
 		};
+		T100 /* AnyRouterManagerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = V100 /* Build configuration list for PBXNativeTarget "AnyRouterManagerTests" */;
+			buildPhases = (
+				Y100 /* Sources */,
+				Z100 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E101 /* PBXTargetDependency */,
+			);
+			name = AnyRouterManagerTests;
+			productName = AnyRouterManagerTests;
+			productReference = U100 /* AnyRouterManagerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
+/* Begin PBXContainerItemProxy section */
+		D101 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F10000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F10001;
+			remoteInfo = AnyRouterManager;
+		};
+/* Begin PBXTargetDependency section */
+		E101 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F10001 /* AnyRouterManager */;
+			targetProxy = D101 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+/* End PBXContainerItemProxy section */
 /* Begin PBXProject section */
 		F10000 /* Project object */ = {
 			isa = PBXProject;
@@ -242,6 +307,7 @@
 			projectRoot = "";
 			targets = (
 				F10001 /* AnyRouterManager */,
+				T100 /* AnyRouterManagerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -271,6 +337,14 @@
 				A10018 /* AccountFormView.swift in Sources */,
 				A10019 /* CookieImportView.swift in Sources */,
 				A10020 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		Y100 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B101 /* AnyRouterAPIWAFTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +384,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anyrouter.manager.tests;
+				PRODUCT_NAME = AnyRouterManagerTests;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -400,6 +476,66 @@
 			};
 			name = Release;
 		};
+		W100 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anyrouter.manager.tests;
+				PRODUCT_NAME = AnyRouterManagerTests;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AnyRouterManager.app/Contents/MacOS/AnyRouterManager";
+			};
+			name = Debug;
+		};
+		X100 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AnyRouterManager.app/Contents/MacOS/AnyRouterManager";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -417,6 +553,15 @@
 			buildConfigurations = (
 				H10003 /* Debug */,
 				H10004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		V100 /* Build configuration list for PBXNativeTarget "AnyRouterManagerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W100 /* Debug */,
+				X100 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
