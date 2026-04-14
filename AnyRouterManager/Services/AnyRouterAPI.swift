@@ -43,7 +43,7 @@ actor AnyRouterAPI {
             request.setValue(String(uid), forHTTPHeaderField: provider.apiUserKey)
         }
 
-        let data = try await performRequest(&request, sessionCookie: sessionCookie)
+        let data = try await performRequest(&request, sessionCookie: sessionCookie, provider: provider)
 
         let userInfo = try JSONDecoder().decode(UserInfoResponse.self, from: data)
         guard userInfo.success, let userData = userInfo.data else {
@@ -70,7 +70,7 @@ actor AnyRouterAPI {
         request.setValue(provider.domain, forHTTPHeaderField: "Origin")
         request.setValue(apiUser, forHTTPHeaderField: provider.apiUserKey)
 
-        let data = try await performRequest(&request, sessionCookie: sessionCookie)
+        let data = try await performRequest(&request, sessionCookie: sessionCookie, provider: provider)
 
         let userInfo = try JSONDecoder().decode(UserInfoResponse.self, from: data)
         guard userInfo.success, let userData = userInfo.data else {
@@ -122,7 +122,7 @@ actor AnyRouterAPI {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("XMLHttpRequest", forHTTPHeaderField: "X-Requested-With")
 
-        let data = try await performRequest(&request, sessionCookie: sessionCookie)
+        let data = try await performRequest(&request, sessionCookie: sessionCookie, provider: provider)
 
         if let result = try? JSONDecoder().decode(CheckInResponse.self, from: data) {
             if result.isSuccess { return "签到成功" }
@@ -144,8 +144,20 @@ actor AnyRouterAPI {
         return try await performRequest(&request, sessionCookie: sessionCookie)
     }
 
-    private func performRequest(_ request: inout URLRequest, sessionCookie: String) async throws -> Data {
-        request.setValue("session=\(sessionCookie)", forHTTPHeaderField: "Cookie")
+    private func performRequest(_ request: inout URLRequest, sessionCookie: String, provider: ProviderConfig? = nil) async throws -> Data {
+        let cookies = Self.parseCookieHeader(sessionCookie)
+        guard cookies["session"] != nil else {
+            throw APIError.sessionExpired
+        }
+
+        var merged = cookies
+        if let provider {
+            let prewarm = try await prewarmCookies(for: provider, existingCookies: cookies)
+            for (name, value) in prewarm where provider.wafCookieNames.contains(name) {
+                merged[name] = value
+            }
+        }
+        request.setValue(Self.mergedCookieHeader(from: merged), forHTTPHeaderField: "Cookie")
 
         let first = try await performTransport(request)
         try checkHTTPStatus(first.response)
@@ -159,17 +171,15 @@ actor AnyRouterAPI {
             throw APIError.wafBlocked
         }
 
-        var wafParts = ["acw_sc__v2=\(acwScV2)"]
+        merged["acw_sc__v2"] = acwScV2
         if let http = first.response as? HTTPURLResponse, let url = request.url {
             let headerFields = http.allHeaderFields as? [String: String] ?? [:]
-            let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
-            for cookie in cookies where cookie.name == "acw_tc" || cookie.name == "cdn_sec_tc" {
-                wafParts.append("\(cookie.name)=\(cookie.value)")
+            let respCookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
+            for cookie in respCookies where cookie.name == "acw_tc" || cookie.name == "cdn_sec_tc" {
+                merged[cookie.name] = cookie.value
             }
         }
-
-        let cookieString = wafParts.joined(separator: "; ") + "; session=\(sessionCookie)"
-        request.setValue(cookieString, forHTTPHeaderField: "Cookie")
+        request.setValue(Self.mergedCookieHeader(from: merged), forHTTPHeaderField: "Cookie")
 
         let second = try await performTransport(request)
         try checkHTTPStatus(second.response)
@@ -178,6 +188,30 @@ actor AnyRouterAPI {
             throw APIError.wafBlocked
         }
         return second.data
+    }
+
+    private func prewarmCookies(for provider: ProviderConfig, existingCookies: [String: String]) async throws -> [String: String] {
+        var request = URLRequest(url: provider.loginURL)
+        request.httpMethod = "GET"
+        request.setValue(provider.domain, forHTTPHeaderField: "Referer")
+        request.setValue(provider.domain, forHTTPHeaderField: "Origin")
+        request.setValue(Self.mergedCookieHeader(from: existingCookies), forHTTPHeaderField: "Cookie")
+
+        let response = try await performTransport(request)
+        guard let http = response.response as? HTTPURLResponse, let url = request.url else {
+            return [:]
+        }
+        let headerFields = http.allHeaderFields as? [String: String] ?? [:]
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url)
+        var result: [String: String] = [:]
+        for cookie in cookies where provider.wafCookieNames.contains(cookie.name) {
+            result[cookie.name] = cookie.value
+        }
+        return result
+    }
+
+    private static func mergedCookieHeader(from cookies: [String: String]) -> String {
+        cookies.sorted(by: { $0.key < $1.key }).map { "\($0.key)=\($0.value)" }.joined(separator: "; ")
     }
 
     // MARK: - WAF Solver (pure Swift, no JavaScriptCore)

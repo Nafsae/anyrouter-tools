@@ -46,4 +46,19 @@ final class AnyRouterAPIWAFTests: XCTestCase {
             XCTAssertEqual(error, .sessionExpired)
         }
     }
+
+    func testPrewarmCookiesAreMergedIntoAuthenticatedRequest() async throws {
+        var capturedCookies: [String] = []
+        let api = AnyRouterAPI(transport: { request in
+            capturedCookies.append(request.value(forHTTPHeaderField: "Cookie") ?? "")
+            if request.url?.path == "/login" {
+                return AnyRouterAPI.htmlResponse("<html>login</html>", cookies: ["acw_tc=tc", "cdn_sec_tc=cdn"])
+            }
+            return AnyRouterAPI.jsonResponse(#"{"success":true,"data":{"id":1,"username":"demo","quota":500000,"used_quota":0}}"#, status: 200)
+        })
+
+        _ = try await api.detectAccount(provider: .provider(for: "anyrouter"), sessionCookie: "session=abc123")
+
+        XCTAssertTrue(capturedCookies.contains(where: { $0.contains("session=abc123") && $0.contains("acw_tc=tc") }))
+    }
 }
