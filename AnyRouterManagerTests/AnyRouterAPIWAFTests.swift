@@ -18,4 +18,16 @@ final class AnyRouterAPIWAFTests: XCTestCase {
 
         XCTAssertEqual(cookies["session"], "plain-session-value")
     }
+
+    func testChallengeHtmlIsDetectedAsWafPage() {
+        let html = "<html><script>var arg1='84E4F48DF2C67F59FE1FE70CC566D1BE649AE88E';</script></html>"
+
+        XCTAssertTrue(AnyRouterAPI.isWAFChallengePage(data: Data(html.utf8)))
+    }
+
+    func testUnauthorizedJsonIsNotDetectedAsWafPage() {
+        let json = #"{"message":"无权进行此操作，未登录且未提供 access token","success":false}"#
+
+        XCTAssertFalse(AnyRouterAPI.isWAFChallengePage(data: Data(json.utf8)))
+    }
 }

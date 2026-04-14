@@ -329,4 +329,9 @@ extension AnyRouterAPI {
         }
         return result
     }
+
+    static func isWAFChallengePage(data: Data) -> Bool {
+        guard let html = String(data: data, encoding: .utf8) else { return false }
+        return html.hasPrefix("<html") && (html.contains("acw_sc__v2") || html.contains("var arg1='"))
+    }
 }
